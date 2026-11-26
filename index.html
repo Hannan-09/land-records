@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Land Survey Records Portal | NEW & OLD RECORDS</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- JSZip for Client-side ZIP download -->
+  <script src="assets/js/jszip.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top App Bar -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">Land Records</h1>
+            <p class="brand-subtitle">Kadival Land Documents Portal</p>
+          </div>
+        </div>
+        <div class="header-badges">
+          <span class="badge-total" id="totalRecordsBadge">14 Records</span>
+        </div>
+      </div>
+
+      <!-- Quick Global Search -->
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          id="surveySearchInput" 
+          placeholder="Search by Survey No. (e.g. 910, 635)..." 
+          autocomplete="off"
+        >
+        <button id="clearSearchBtn" class="clear-btn" aria-label="Clear search" style="display: none;">
+          ✕
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ================= 1. HOME VIEW ================= -->
+      <section id="homeView" class="view-section active">
+        <div class="welcome-banner">
+          <h2>Select Records Category</h2>
+          <p>Tap a category below to browse documents or download in bulk</p>
+        </div>
+
+        <div class="category-grid">
+          
+          <!-- NEW RECORDS BUTTON CARD -->
+          <button type="button" class="category-card new-card" id="btnSelectNew" data-category="NEW">
+            <div class="card-glow"></div>
+            <div class="card-header">
+              <span class="category-tag tag-new">LATEST</span>
+              <span class="file-count-chip">7 PDFs</span>
+            </div>
+            <div class="category-icon-wrapper new-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                <polyline points="13 2 13 9 20 9"></polyline>
+                <path d="M9 15h6"></path>
+                <path d="M12 12v6"></path>
+              </svg>
+            </div>
+            <h3 class="category-title">NEW RECORD</h3>
+            <p class="category-desc">Latest certified survey numbers (635, 636, 909, 910, 911, 912, 914)</p>
+            <div class="card-footer">
+              <span class="view-link">Open Records</span>
+              <span class="arrow-circle">→</span>
+            </div>
+          </button>
+
+          <!-- OLD RECORDS BUTTON CARD -->
+          <button type="button" class="category-card old-card" id="btnSelectOld" data-category="OLD">
+            <div class="card-glow"></div>
+            <div class="card-header">
+              <span class="category-tag tag-old">ARCHIVED</span>
+              <span class="file-count-chip">7 PDFs</span>
+            </div>
+            <div class="category-icon-wrapper old-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                <line x1="9" y1="7" x2="15" y2="7"></line>
+                <line x1="9" y1="11" x2="13" y2="11"></line>
+              </svg>
+            </div>
+            <h3 class="category-title">OLD RECORD</h3>
+            <p class="category-desc">Historical survey records (635, 636, 909, 910, 911, 912, 914)</p>
+            <div class="card-footer">
+              <span class="view-link">Open Records</span>
+              <span class="arrow-circle">→</span>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- Quick Summary & Bulk Download Action -->
+        <div class="home-quick-actions">
+          <div class="quick-action-header">
+            <h4>Quick Actions</h4>
+          </div>
+          <div class="action-buttons-stack">
+            <button class="action-btn primary-btn" id="btnDownloadAllGlobal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download All 14 PDFs (ZIP)</span>
+            </button>
+            <button class="action-btn secondary-btn" id="btnViewAllRecords">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>View All Records Together</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Survey Numbers Quick Chips -->
+        <div class="survey-pills-section">
+          <h4>Survey Numbers in this Project:</h4>
+          <div class="pills-container">
+            <button class="pill" data-survey="635">#635</button>
+            <button class="pill" data-survey="636">#636</button>
+            <button class="pill" data-survey="909">#909</button>
+            <button class="pill" data-survey="910">#910</button>
+            <button class="pill" data-survey="911">#911</button>
+            <button class="pill" data-survey="912">#912</button>
+            <button class="pill" data-survey="914">#914</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. RECORDS LIST VIEW ================= -->
+      <section id="recordsView" class="view-section">
+        
+        <!-- Navigation bar inside records view -->
+        <div class="records-nav">
+          <button id="btnBackToHome" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Home</span>
+          </button>
+          <div class="records-title-wrap">
+            <h2 id="currentCategoryHeading">All Records</h2>
+            <span id="filteredCountBadge" class="count-pill">14 files</span>
+          </div>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <button class="tab-btn active" data-filter="ALL">All (14)</button>
+          <button class="tab-btn" data-filter="NEW">New Records (7)</button>
+          <button class="tab-btn" data-filter="OLD">Old Records (7)</button>
+        </div>
+
+        <!-- Section Bulk Download Toolbar -->
+        <div class="section-toolbar">
+          <div class="toolbar-info">
+            <span id="toolbarStatusText">Showing 14 documents</span>
+          </div>
+          <button class="btn-download-zip" id="btnDownloadCurrentZip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download Section (ZIP)</span>
+          </button>
+        </div>
+
+        <!-- Cards List Container -->
+        <div id="recordsContainer" class="records-list">
+          <!-- Dynamically populated via app.js -->
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <div class="empty-icon">🔍</div>
+          <h3>No records found</h3>
+          <p>No survey record matched your search query.</p>
+          <button id="btnResetSearch" class="reset-btn">Reset Search</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Mobile Nav Indicator -->
+    <footer class="app-footer">
+      <p>Land Records Portal &bull; Hosted on Vercel &bull; 24/7 Access</p>
+    </footer>
+
+  </div>
+
+  <!-- ================= 3. PDF IN-APP MODAL VIEWER ================= -->
+  <div id="pdfModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-dialog">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span id="modalTypeBadge" class="modal-badge">NEW</span>
+          <h3 id="modalPdfTitle" class="modal-title">Survey 910</h3>
+        </div>
+        <div class="modal-actions">
+          <button id="modalOpenExternalBtn" class="modal-icon-btn" title="Open in new tab / full browser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </button>
+          <button id="modalDownloadBtn" class="modal-icon-btn" title="Download PDF">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
+          <button id="modalCloseBtn" class="modal-close-btn" aria-label="Close">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Embedded Viewer) -->
+      <div class="modal-body">
+        <div id="pdfLoadingSpinner" class="pdf-spinner">
+          <div class="spinner-circle"></div>
+          <p>Loading document...</p>
+        </div>
+        <iframe id="pdfIframe" src="" frameborder="0"></iframe>
+        
+        <!-- Mobile Fallback Notice -->
+        <div class="mobile-pdf-notice">
+          <p>If preview is blank on your phone, tap below to open directly:</p>
+          <a id="mobileDirectOpenBtn" href="#" target="_blank" class="direct-open-link">
+            Open PDF in Browser Viewer ↗
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= 4. ZIP PROGRESS MODAL ================= -->
+  <div id="zipProgressModal" class="modal-overlay" aria-hidden="true">
+    <div class="progress-dialog">
+      <div class="progress-spinner"></div>
+      <h3 id="zipProgressTitle">Preparing ZIP Download</h3>
+      <p id="zipProgressText">Gathering documents (0/0)...</p>
+      <div class="progress-bar-wrap">
+        <div id="zipProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

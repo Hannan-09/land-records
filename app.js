@@ -1,532 +1,610 @@
 /**
- * Land Survey Records Portal - Application Logic
+ * Land Survey Records Portal - Application Logic (v3.0)
  */
 
-// Mapping of Survey Numbers to Local Land Names
-const SURVEY_NAMES = {
-  '635': 'META WALU KAKA NU',
-  '636': 'META WALU AAPDU',
-  '909': '5 MANYU AAPDU',
-  '910': 'SAMANYU KAKA WALU',
-  '911': 'RASUL PIRA WALU',
-  '912': 'KUWA WALI KAAPLI',
-  '914': '5 MANYU BAAJU NI KAAPLI'
-};
-
-// 1. Certified Land Records Catalog
-const LAND_RECORDS = [
-  // --- NEW RECORDS ---
+// 1. Core Data: 7 Dedicated Land Plots with NEW & OLD Records
+const LAND_PLOTS = [
   {
-    id: 'new-635',
-    surveyNo: '635',
-    landName: 'META WALU KAKA NU',
-    title: '635 - META WALU KAKA NU',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '635.pdf',
-    filePath: 'NEW RECORD/635.pdf',
-    sizeFormatted: '451 KB'
-  },
-  {
-    id: 'new-636',
     surveyNo: '636',
     landName: 'META WALU AAPDU',
-    title: '636 - META WALU AAPDU',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '636.pdf',
-    filePath: 'NEW RECORD/636.pdf',
-    sizeFormatted: '597 KB'
+    newRecord: {
+      id: 'new-636',
+      surveyNo: '636',
+      landName: 'META WALU AAPDU',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #636 - META WALU AAPDU (NEW)',
+      fileName: '636.pdf',
+      filePath: 'NEW RECORD/636.pdf',
+      sizeFormatted: '597 KB'
+    },
+    oldRecord: {
+      id: 'old-636',
+      surveyNo: '636',
+      landName: 'META WALU AAPDU',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #636 - META WALU AAPDU (OLD)',
+      fileName: '636 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/636 OLD RECORD.pdf',
+      sizeFormatted: '501 KB'
+    }
   },
   {
-    id: 'new-909',
-    surveyNo: '909',
-    landName: '5 MANYU AAPDU',
-    title: '909 - 5 MANYU AAPDU',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '909.pdf',
-    filePath: 'NEW RECORD/909.pdf',
-    sizeFormatted: '351 KB'
-  },
-  {
-    id: 'new-910',
-    surveyNo: '910',
-    landName: 'SAMANYU KAKA WALU',
-    title: '910 - SAMANYU KAKA WALU',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '910.pdf',
-    filePath: 'NEW RECORD/910.pdf',
-    sizeFormatted: '610 KB'
-  },
-  {
-    id: 'new-911',
-    surveyNo: '911',
-    landName: 'RASUL PIRA WALU',
-    title: '911 - RASUL PIRA WALU',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '911.pdf',
-    filePath: 'NEW RECORD/911.pdf',
-    sizeFormatted: '655 KB'
-  },
-  {
-    id: 'new-912',
-    surveyNo: '912',
-    landName: 'KUWA WALI KAAPLI',
-    title: '912 - KUWA WALI KAAPLI',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '912.pdf',
-    filePath: 'NEW RECORD/912.pdf',
-    sizeFormatted: '675 KB'
-  },
-  {
-    id: 'new-914',
-    surveyNo: '914',
-    landName: '5 MANYU BAAJU NI KAAPLI',
-    title: '914 - 5 MANYU BAAJU NI KAAPLI',
-    category: 'NEW',
-    categoryLabel: 'NEW RECORD',
-    fileName: '914.pdf',
-    filePath: 'NEW RECORD/914.pdf',
-    sizeFormatted: '432 KB'
-  },
-
-  // --- OLD RECORDS ---
-  {
-    id: 'old-635',
     surveyNo: '635',
     landName: 'META WALU KAKA NU',
-    title: '635 - META WALU KAKA NU (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '635 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/635 OLD RECORD.pdf',
-    sizeFormatted: '508 KB'
+    newRecord: {
+      id: 'new-635',
+      surveyNo: '635',
+      landName: 'META WALU KAKA NU',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #635 - META WALU KAKA NU (NEW)',
+      fileName: '635.pdf',
+      filePath: 'NEW RECORD/635.pdf',
+      sizeFormatted: '451 KB'
+    },
+    oldRecord: {
+      id: 'old-635',
+      surveyNo: '635',
+      landName: 'META WALU KAKA NU',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #635 - META WALU KAKA NU (OLD)',
+      fileName: '635 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/635 OLD RECORD.pdf',
+      sizeFormatted: '508 KB'
+    }
   },
   {
-    id: 'old-636',
-    surveyNo: '636',
-    landName: 'META WALU AAPDU',
-    title: '636 - META WALU AAPDU (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '636 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/636 OLD RECORD.pdf',
-    sizeFormatted: '501 KB'
-  },
-  {
-    id: 'old-909',
     surveyNo: '909',
     landName: '5 MANYU AAPDU',
-    title: '909 - 5 MANYU AAPDU (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '909 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/909 OLD RECORD.pdf',
-    sizeFormatted: '465 KB'
+    newRecord: {
+      id: 'new-909',
+      surveyNo: '909',
+      landName: '5 MANYU AAPDU',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #909 - 5 MANYU AAPDU (NEW)',
+      fileName: '909.pdf',
+      filePath: 'NEW RECORD/909.pdf',
+      sizeFormatted: '351 KB'
+    },
+    oldRecord: {
+      id: 'old-909',
+      surveyNo: '909',
+      landName: '5 MANYU AAPDU',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #909 - 5 MANYU AAPDU (OLD)',
+      fileName: '909 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/909 OLD RECORD.pdf',
+      sizeFormatted: '465 KB'
+    }
   },
   {
-    id: 'old-910',
     surveyNo: '910',
     landName: 'SAMANYU KAKA WALU',
-    title: '910 - SAMANYU KAKA WALU (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '910 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/910 OLD RECORD.pdf',
-    sizeFormatted: '453 KB'
+    newRecord: {
+      id: 'new-910',
+      surveyNo: '910',
+      landName: 'SAMANYU KAKA WALU',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #910 - SAMANYU KAKA WALU (NEW)',
+      fileName: '910.pdf',
+      filePath: 'NEW RECORD/910.pdf',
+      sizeFormatted: '610 KB'
+    },
+    oldRecord: {
+      id: 'old-910',
+      surveyNo: '910',
+      landName: 'SAMANYU KAKA WALU',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #910 - SAMANYU KAKA WALU (OLD)',
+      fileName: '910 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/910 OLD RECORD.pdf',
+      sizeFormatted: '453 KB'
+    }
   },
   {
-    id: 'old-911',
     surveyNo: '911',
     landName: 'RASUL PIRA WALU',
-    title: '911 - RASUL PIRA WALU (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '911 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/911 OLD RECORD.pdf',
-    sizeFormatted: '496 KB'
+    newRecord: {
+      id: 'new-911',
+      surveyNo: '911',
+      landName: 'RASUL PIRA WALU',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #911 - RASUL PIRA WALU (NEW)',
+      fileName: '911.pdf',
+      filePath: 'NEW RECORD/911.pdf',
+      sizeFormatted: '655 KB'
+    },
+    oldRecord: {
+      id: 'old-911',
+      surveyNo: '911',
+      landName: 'RASUL PIRA WALU',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #911 - RASUL PIRA WALU (OLD)',
+      fileName: '911 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/911 OLD RECORD.pdf',
+      sizeFormatted: '496 KB'
+    }
   },
   {
-    id: 'old-912',
     surveyNo: '912',
     landName: 'KUWA WALI KAAPLI',
-    title: '912 - KUWA WALI KAAPLI (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '912 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/912 OLD RECORD.pdf',
-    sizeFormatted: '486 KB'
+    newRecord: {
+      id: 'new-912',
+      surveyNo: '912',
+      landName: 'KUWA WALI KAAPLI',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #912 - KUWA WALI KAAPLI (NEW)',
+      fileName: '912.pdf',
+      filePath: 'NEW RECORD/912.pdf',
+      sizeFormatted: '675 KB'
+    },
+    oldRecord: {
+      id: 'old-912',
+      surveyNo: '912',
+      landName: 'KUWA WALI KAAPLI',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #912 - KUWA WALI KAAPLI (OLD)',
+      fileName: '912 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/912 OLD RECORD.pdf',
+      sizeFormatted: '486 KB'
+    }
   },
   {
-    id: 'old-914',
     surveyNo: '914',
     landName: '5 MANYU BAAJU NI KAAPLI',
-    title: '914 - 5 MANYU BAAJU NI KAAPLI (Old)',
-    category: 'OLD',
-    categoryLabel: 'OLD RECORD',
-    fileName: '914 OLD RECORD.pdf',
-    filePath: 'OLD RECORD/914 OLD RECORD.pdf',
-    sizeFormatted: '463 KB'
+    newRecord: {
+      id: 'new-914',
+      surveyNo: '914',
+      landName: '5 MANYU BAAJU NI KAAPLI',
+      category: 'NEW',
+      categoryLabel: 'NEW RECORD',
+      title: 'Survey #914 - 5 MANYU BAAJU NI KAAPLI (NEW)',
+      fileName: '914.pdf',
+      filePath: 'NEW RECORD/914.pdf',
+      sizeFormatted: '432 KB'
+    },
+    oldRecord: {
+      id: 'old-914',
+      surveyNo: '914',
+      landName: '5 MANYU BAAJU NI KAAPLI',
+      category: 'OLD',
+      categoryLabel: 'OLD RECORD',
+      title: 'Survey #914 - 5 MANYU BAAJU NI KAAPLI (OLD)',
+      fileName: '914 OLD RECORD.pdf',
+      filePath: 'OLD RECORD/914 OLD RECORD.pdf',
+      sizeFormatted: '463 KB'
+    }
   }
 ];
 
+// Flat List for fast global operations
+const ALL_DOCUMENTS = [];
+LAND_PLOTS.forEach(plot => {
+  ALL_DOCUMENTS.push(plot.newRecord);
+  ALL_DOCUMENTS.push(plot.oldRecord);
+});
+
 // 2. Application State
-const state = {
-  currentView: 'home', // 'home' | 'records'
-  currentFilter: 'ALL', // 'ALL' | 'NEW' | 'OLD'
+const appState = {
+  currentView: 'PLOTS', // 'PLOTS' (By Land) | 'NEW' | 'OLD'
+  selectedSurveyChip: 'ALL',
   searchQuery: '',
-  activeModalRecord: null
+  activeModalDoc: null
 };
 
 // 3. DOM Elements
-const elements = {
-  homeView: document.getElementById('homeView'),
-  recordsView: document.getElementById('recordsView'),
-  recordsContainer: document.getElementById('recordsContainer'),
-  emptyState: document.getElementById('emptyState'),
-  
-  // Header / Search
-  searchInput: document.getElementById('surveySearchInput'),
+const el = {
+  searchInput: document.getElementById('searchInput'),
   clearSearchBtn: document.getElementById('clearSearchBtn'),
-  totalRecordsBadge: document.getElementById('totalRecordsBadge'),
-
-  // Home buttons
-  btnSelectNew: document.getElementById('btnSelectNew'),
-  btnSelectOld: document.getElementById('btnSelectOld'),
-  btnDownloadAllGlobal: document.getElementById('btnDownloadAllGlobal'),
-  btnViewAllRecords: document.getElementById('btnViewAllRecords'),
-  pills: document.querySelectorAll('.pill'),
-
-  // Records view nav & filters
-  btnBackToHome: document.getElementById('btnBackToHome'),
-  currentCategoryHeading: document.getElementById('currentCategoryHeading'),
-  filteredCountBadge: document.getElementById('filteredCountBadge'),
-  filterTabs: document.querySelectorAll('.tab-btn'),
-  toolbarStatusText: document.getElementById('toolbarStatusText'),
-  btnDownloadCurrentZip: document.getElementById('btnDownloadCurrentZip'),
-  btnResetSearch: document.getElementById('btnResetSearch'),
+  tabItems: document.querySelectorAll('.tab-item'),
+  chipButtons: document.querySelectorAll('.chip-btn'),
+  cardsGrid: document.getElementById('cardsGrid'),
+  noResultsBox: document.getElementById('noResultsBox'),
+  resultsCountText: document.getElementById('resultsCountText'),
+  btnResetFilter: document.getElementById('btnResetFilter'),
+  btnHeaderZip: document.getElementById('btnHeaderZip'),
+  btnQuickZipCurrent: document.getElementById('btnQuickZipCurrent'),
 
   // PDF Preview Modal
   pdfModal: document.getElementById('pdfModal'),
   modalTypeBadge: document.getElementById('modalTypeBadge'),
-  modalPdfTitle: document.getElementById('modalPdfTitle'),
-  modalIframe: document.getElementById('pdfIframe'),
-  pdfLoadingSpinner: document.getElementById('pdfLoadingSpinner'),
+  modalTitle: document.getElementById('modalTitle'),
+  pdfFrame: document.getElementById('pdfFrame'),
+  pdfSpinner: document.getElementById('pdfSpinner'),
   modalCloseBtn: document.getElementById('modalCloseBtn'),
-  modalOpenExternalBtn: document.getElementById('modalOpenExternalBtn'),
+  modalExternalBtn: document.getElementById('modalExternalBtn'),
   modalDownloadBtn: document.getElementById('modalDownloadBtn'),
-  mobileDirectOpenBtn: document.getElementById('mobileDirectOpenBtn'),
+  modalDirectOpenLink: document.getElementById('modalDirectOpenLink'),
 
-  // ZIP Progress Modal
-  zipProgressModal: document.getElementById('zipProgressModal'),
-  zipProgressTitle: document.getElementById('zipProgressTitle'),
-  zipProgressText: document.getElementById('zipProgressText'),
+  // ZIP Modal
+  zipModal: document.getElementById('zipModal'),
+  zipTitle: document.getElementById('zipTitle'),
+  zipStatusText: document.getElementById('zipStatusText'),
   zipProgressBar: document.getElementById('zipProgressBar')
 };
 
 // 4. Initialization
-function initApp() {
-  bindEvents();
-  render();
+function initialize() {
+  bindEventListeners();
+  renderApp();
 }
 
-// 5. Event Binding
-function bindEvents() {
-  // Search input events (supports survey number or land name)
-  elements.searchInput.addEventListener('input', (e) => {
-    state.searchQuery = e.target.value.trim().toLowerCase();
-    elements.clearSearchBtn.style.display = state.searchQuery ? 'flex' : 'none';
-    
-    // Automatically switch to records view if typing search
-    if (state.searchQuery && state.currentView !== 'records') {
-      state.currentView = 'records';
-    }
-    render();
+// 5. Event Listeners
+function bindEventListeners() {
+  // Search Input
+  el.searchInput.addEventListener('input', (e) => {
+    appState.searchQuery = e.target.value.trim().toLowerCase();
+    el.clearSearchBtn.style.display = appState.searchQuery ? 'flex' : 'none';
+    renderApp();
   });
 
-  elements.clearSearchBtn.addEventListener('click', () => {
-    state.searchQuery = '';
-    elements.searchInput.value = '';
-    elements.clearSearchBtn.style.display = 'none';
-    elements.searchInput.focus();
-    render();
+  el.clearSearchBtn.addEventListener('click', () => {
+    appState.searchQuery = '';
+    el.searchInput.value = '';
+    el.clearSearchBtn.style.display = 'none';
+    el.searchInput.focus();
+    renderApp();
   });
 
-  if (elements.btnResetSearch) {
-    elements.btnResetSearch.addEventListener('click', () => {
-      state.searchQuery = '';
-      elements.searchInput.value = '';
-      elements.clearSearchBtn.style.display = 'none';
-      state.currentFilter = 'ALL';
-      render();
+  if (el.btnResetFilter) {
+    el.btnResetFilter.addEventListener('click', () => {
+      appState.searchQuery = '';
+      appState.selectedSurveyChip = 'ALL';
+      el.searchInput.value = '';
+      el.clearSearchBtn.style.display = 'none';
+      updateActiveChipUI('ALL');
+      renderApp();
     });
   }
 
-  // Home Category Buttons
-  elements.btnSelectNew.addEventListener('click', () => {
-    switchView('records', 'NEW');
-  });
-
-  elements.btnSelectOld.addEventListener('click', () => {
-    switchView('records', 'OLD');
-  });
-
-  elements.btnViewAllRecords.addEventListener('click', () => {
-    switchView('records', 'ALL');
-  });
-
-  // Survey Pills (Search by specific survey number or name)
-  elements.pills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      const survey = pill.getAttribute('data-survey');
-      state.searchQuery = survey;
-      elements.searchInput.value = survey;
-      elements.clearSearchBtn.style.display = 'flex';
-      switchView('records', 'ALL');
-    });
-  });
-
-  // Back to home
-  elements.btnBackToHome.addEventListener('click', () => {
-    state.currentView = 'home';
-    render();
-  });
-
-  // Filter Tabs
-  elements.filterTabs.forEach(tab => {
+  // Segmented Tabs ('PLOTS', 'NEW', 'OLD')
+  el.tabItems.forEach(tab => {
     tab.addEventListener('click', () => {
-      const filter = tab.getAttribute('data-filter');
-      state.currentFilter = filter;
-      render();
+      const view = tab.getAttribute('data-view');
+      appState.currentView = view;
+      
+      el.tabItems.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      renderApp();
     });
   });
 
-  // Bulk ZIP Download from Home
-  elements.btnDownloadAllGlobal.addEventListener('click', () => {
-    downloadRecordsAsZip(LAND_RECORDS, 'All_Land_Records_14_PDFs.zip');
+  // Land Selector Strip Chips
+  el.chipButtons.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const survey = chip.getAttribute('data-survey');
+      appState.selectedSurveyChip = survey;
+      updateActiveChipUI(survey);
+      renderApp();
+    });
   });
 
-  // Bulk ZIP Download from Section Toolbar
-  elements.btnDownloadCurrentZip.addEventListener('click', () => {
-    const recordsToDownload = getFilteredRecords();
-    if (recordsToDownload.length === 0) {
-      alert('No records available to download.');
+  // Bulk ZIP Download from Header (All 14 PDFs)
+  el.btnHeaderZip.addEventListener('click', () => {
+    triggerZipDownload(ALL_DOCUMENTS, 'All_Land_Records_14_PDFs.zip');
+  });
+
+  // Bulk ZIP Download from Section Toolbar (Current filter)
+  el.btnQuickZipCurrent.addEventListener('click', () => {
+    const docs = getCurrentlyVisibleDocs();
+    if (docs.length === 0) {
+      alert('No documents available to download.');
       return;
     }
-    const zipName = state.currentFilter === 'NEW' ? 'New_Land_Records.zip' :
-                    state.currentFilter === 'OLD' ? 'Old_Land_Records.zip' : 'Filtered_Land_Records.zip';
-    downloadRecordsAsZip(recordsToDownload, zipName);
+    const zipName = appState.currentView === 'NEW' ? 'New_Land_Records.zip' :
+                    appState.currentView === 'OLD' ? 'Old_Land_Records.zip' : 'Filtered_Land_Records.zip';
+    triggerZipDownload(docs, zipName);
   });
 
-  // Modal Close
-  elements.modalCloseBtn.addEventListener('click', closePdfModal);
-  elements.pdfModal.addEventListener('click', (e) => {
-    if (e.target === elements.pdfModal) {
-      closePdfModal();
-    }
+  // Modal Close Events
+  el.modalCloseBtn.addEventListener('click', closePdfModal);
+  el.pdfModal.addEventListener('click', (e) => {
+    if (e.target === el.pdfModal) closePdfModal();
   });
 
-  // Keyboard escape
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closePdfModal();
-    }
+    if (e.key === 'Escape') closePdfModal();
   });
 
   // Modal External Open
-  elements.modalOpenExternalBtn.addEventListener('click', () => {
-    if (state.activeModalRecord) {
-      window.open(encodeURI(state.activeModalRecord.filePath), '_blank');
+  el.modalExternalBtn.addEventListener('click', () => {
+    if (appState.activeModalDoc) {
+      window.open(encodeURI(appState.activeModalDoc.filePath), '_blank');
     }
   });
 
   // Modal Download
-  elements.modalDownloadBtn.addEventListener('click', () => {
-    if (state.activeModalRecord) {
-      triggerDownload(state.activeModalRecord.filePath, state.activeModalRecord.fileName);
+  el.modalDownloadBtn.addEventListener('click', () => {
+    if (appState.activeModalDoc) {
+      downloadSingleFile(appState.activeModalDoc.filePath, appState.activeModalDoc.fileName);
     }
   });
 
-  // Modal Iframe load event
-  elements.modalIframe.addEventListener('load', () => {
-    elements.pdfLoadingSpinner.classList.add('hidden');
+  // Iframe load spinner hide
+  el.pdfFrame.addEventListener('load', () => {
+    el.pdfSpinner.classList.add('hidden');
   });
 }
 
-// 6. Navigation Helpers
-function switchView(viewName, filterName) {
-  state.currentView = viewName;
-  if (filterName) {
-    state.currentFilter = filterName;
-  }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  render();
-}
-
-// 7. Filter & Search Logic (searches by survey number, land name, title, or filename)
-function getFilteredRecords() {
-  return LAND_RECORDS.filter(record => {
-    // Category match
-    const categoryMatches = (state.currentFilter === 'ALL') || (record.category === state.currentFilter);
-    if (!categoryMatches) return false;
-
-    // Search query match
-    if (!state.searchQuery) return true;
-    const query = state.searchQuery.toLowerCase();
-    return record.surveyNo.toLowerCase().includes(query) || 
-           record.landName.toLowerCase().includes(query) ||
-           record.title.toLowerCase().includes(query) ||
-           record.fileName.toLowerCase().includes(query);
-  });
-}
-
-// 8. Main Render Function
-function render() {
-  // Toggle Views
-  if (state.currentView === 'home') {
-    elements.homeView.classList.add('active');
-    elements.recordsView.classList.remove('active');
-  } else {
-    elements.homeView.classList.remove('active');
-    elements.recordsView.classList.add('active');
-  }
-
-  // Update Tabs
-  elements.filterTabs.forEach(tab => {
-    const filter = tab.getAttribute('data-filter');
-    if (filter === state.currentFilter) {
-      tab.classList.add('active');
+function updateActiveChipUI(survey) {
+  el.chipButtons.forEach(btn => {
+    if (btn.getAttribute('data-survey') === survey) {
+      btn.classList.add('active');
     } else {
-      tab.classList.remove('active');
+      btn.classList.remove('active');
     }
   });
+}
 
-  // Update Headings
-  const filterTitles = {
-    'ALL': 'All Land Records',
-    'NEW': 'NEW RECORDS',
-    'OLD': 'OLD RECORDS'
-  };
-  elements.currentCategoryHeading.textContent = filterTitles[state.currentFilter] || 'Records';
+// 6. Filtering Logic
+function getFilteredPlots() {
+  return LAND_PLOTS.filter(plot => {
+    // Chip filter
+    if (appState.selectedSurveyChip !== 'ALL' && plot.surveyNo !== appState.selectedSurveyChip) {
+      return false;
+    }
 
-  // Get matching items
-  const matchedRecords = getFilteredRecords();
-  elements.filteredCountBadge.textContent = `${matchedRecords.length} files`;
-  elements.toolbarStatusText.textContent = `Showing ${matchedRecords.length} document${matchedRecords.length === 1 ? '' : 's'}`;
+    // Search query filter
+    if (!appState.searchQuery) return true;
+    const q = appState.searchQuery;
+    return plot.surveyNo.includes(q) ||
+           plot.landName.toLowerCase().includes(q) ||
+           plot.newRecord.fileName.toLowerCase().includes(q) ||
+           plot.oldRecord.fileName.toLowerCase().includes(q);
+  });
+}
 
-  // Render cards
-  elements.recordsContainer.innerHTML = '';
+function getFilteredSingleDocs(category) {
+  return ALL_DOCUMENTS.filter(doc => {
+    if (doc.category !== category) return false;
 
-  if (matchedRecords.length === 0) {
-    elements.emptyState.style.display = 'block';
+    // Chip filter
+    if (appState.selectedSurveyChip !== 'ALL' && doc.surveyNo !== appState.selectedSurveyChip) {
+      return false;
+    }
+
+    // Search query filter
+    if (!appState.searchQuery) return true;
+    const q = appState.searchQuery;
+    return doc.surveyNo.includes(q) ||
+           doc.landName.toLowerCase().includes(q) ||
+           doc.fileName.toLowerCase().includes(q);
+  });
+}
+
+function getCurrentlyVisibleDocs() {
+  if (appState.currentView === 'NEW') {
+    return getFilteredSingleDocs('NEW');
+  } else if (appState.currentView === 'OLD') {
+    return getFilteredSingleDocs('OLD');
   } else {
-    elements.emptyState.style.display = 'none';
-    
-    matchedRecords.forEach(record => {
-      const card = createRecordCard(record);
-      elements.recordsContainer.appendChild(card);
+    // Collect from matching plots
+    const plots = getFilteredPlots();
+    const docs = [];
+    plots.forEach(p => {
+      docs.push(p.newRecord);
+      docs.push(p.oldRecord);
     });
+    return docs;
   }
 }
 
-// 9. Card Component Factory
-function createRecordCard(record) {
-  const card = document.createElement('div');
-  card.className = 'record-card';
-  
-  const isNew = record.category === 'NEW';
-  const typeTagClass = isNew ? 'type-new' : 'type-old';
+// 7. Main Rendering
+function renderApp() {
+  el.cardsGrid.innerHTML = '';
 
-  card.innerHTML = `
-    <div class="record-card-top">
-      <div class="survey-badge" title="Survey #${record.surveyNo} - ${record.landName}">
-        <span class="badge-num">#${record.surveyNo}</span>
-        <span class="badge-land-name">${record.landName}</span>
-      </div>
-      <span class="record-type-badge ${typeTagClass}">${record.categoryLabel}</span>
-    </div>
-    
-    <h3 class="record-title">${record.title}</h3>
-    
-    <div class="record-meta">
-      <span class="meta-item">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-        </svg>
-        ${record.fileName}
-      </span>
-      <span class="meta-item">
-        &bull; ${record.sizeFormatted}
-      </span>
-    </div>
-
-    <div class="card-actions-row">
-      <button class="btn-card btn-preview" data-id="${record.id}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-        <span>Preview</span>
-      </button>
-
-      <button class="btn-card btn-download-single" data-id="${record.id}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span>Download</span>
-      </button>
-    </div>
-  `;
-
-  // Attach card button listeners
-  const previewBtn = card.querySelector('.btn-preview');
-  previewBtn.addEventListener('click', () => openPdfModal(record));
-
-  const downloadBtn = card.querySelector('.btn-download-single');
-  downloadBtn.addEventListener('click', () => {
-    triggerDownload(record.filePath, record.fileName);
-  });
-
-  return card;
+  if (appState.currentView === 'PLOTS') {
+    renderPlotsView();
+  } else {
+    renderCategoryView(appState.currentView);
+  }
 }
 
-// 10. PDF In-App Modal Preview
-function openPdfModal(record) {
-  state.activeModalRecord = record;
+// 7A. Render Dedicated Plot Cards (By Land)
+function renderPlotsView() {
+  const plots = getFilteredPlots();
   
-  elements.modalPdfTitle.textContent = `${record.title} (${record.fileName})`;
-  elements.modalTypeBadge.textContent = record.categoryLabel;
-  elements.modalTypeBadge.className = `modal-badge ${record.category === 'NEW' ? 'tag-new' : 'tag-old'}`;
+  el.resultsCountText.textContent = `Showing ${plots.length} of 7 Land Plots`;
 
-  // Safe encoded URL
-  const encodedPath = encodeURI(record.filePath);
+  if (plots.length === 0) {
+    el.noResultsBox.style.display = 'block';
+    return;
+  }
+  el.noResultsBox.style.display = 'none';
+
+  plots.forEach(plot => {
+    const card = document.createElement('div');
+    card.className = 'plot-card';
+
+    card.innerHTML = `
+      <div class="plot-header">
+        <div class="plot-identity">
+          <div class="plot-badge-row">
+            <span class="survey-tag">Survey #${plot.surveyNo}</span>
+          </div>
+          <h2 class="plot-name-title">${plot.landName}</h2>
+        </div>
+        <span class="doc-count-pill">2 Records</span>
+      </div>
+
+      <div class="plot-records-stack">
+        <!-- New Record Row -->
+        <div class="record-row row-new">
+          <div class="row-left">
+            <span class="row-tag tag-new-style">NEW</span>
+            <div class="row-details">
+              <span class="row-filename">${plot.newRecord.fileName}</span>
+              <span class="row-size">Certified &bull; ${plot.newRecord.sizeFormatted}</span>
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="btn-row-action btn-row-preview" data-id="${plot.newRecord.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>View</span>
+            </button>
+            <button class="btn-row-action btn-row-download" data-id="${plot.newRecord.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Old Record Row -->
+        <div class="record-row row-old">
+          <div class="row-left">
+            <span class="row-tag tag-old-style">OLD</span>
+            <div class="row-details">
+              <span class="row-filename">${plot.oldRecord.fileName}</span>
+              <span class="row-size">Archived &bull; ${plot.oldRecord.sizeFormatted}</span>
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="btn-row-action btn-row-preview" data-id="${plot.oldRecord.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>View</span>
+            </button>
+            <button class="btn-row-action btn-row-download" data-id="${plot.oldRecord.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Button event attachments
+    const newPreviewBtn = card.querySelector(`.btn-row-preview[data-id="${plot.newRecord.id}"]`);
+    newPreviewBtn.addEventListener('click', () => openPdfModal(plot.newRecord));
+
+    const newDownloadBtn = card.querySelector(`.btn-row-download[data-id="${plot.newRecord.id}"]`);
+    newDownloadBtn.addEventListener('click', () => downloadSingleFile(plot.newRecord.filePath, plot.newRecord.fileName));
+
+    const oldPreviewBtn = card.querySelector(`.btn-row-preview[data-id="${plot.oldRecord.id}"]`);
+    oldPreviewBtn.addEventListener('click', () => openPdfModal(plot.oldRecord));
+
+    const oldDownloadBtn = card.querySelector(`.btn-row-download[data-id="${plot.oldRecord.id}"]`);
+    oldDownloadBtn.addEventListener('click', () => downloadSingleFile(plot.oldRecord.filePath, plot.oldRecord.fileName));
+
+    el.cardsGrid.appendChild(card);
+  });
+}
+
+// 7B. Render Filtered Category View (NEW or OLD)
+function renderCategoryView(category) {
+  const docs = getFilteredSingleDocs(category);
+  const label = category === 'NEW' ? 'New Records' : 'Old Records';
   
-  elements.pdfLoadingSpinner.classList.remove('hidden');
-  elements.modalIframe.src = encodedPath;
-  elements.mobileDirectOpenBtn.href = encodedPath;
+  el.resultsCountText.textContent = `Showing ${docs.length} ${label}`;
 
-  elements.pdfModal.classList.add('active');
-  elements.pdfModal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  if (docs.length === 0) {
+    el.noResultsBox.style.display = 'block';
+    return;
+  }
+  el.noResultsBox.style.display = 'none';
+
+  docs.forEach(doc => {
+    const card = document.createElement('div');
+    card.className = 'single-record-card';
+
+    const isNew = doc.category === 'NEW';
+    const tagClass = isNew ? 'pill-new' : 'pill-old';
+
+    card.innerHTML = `
+      <div class="single-card-top">
+        <span class="survey-tag">Survey #${doc.surveyNo}</span>
+        <span class="type-pill ${tagClass}">${doc.categoryLabel}</span>
+      </div>
+
+      <h2 class="single-card-title">${doc.landName}</h2>
+      
+      <div style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 8px;">
+        <span>${doc.fileName}</span>
+        <span>&bull;</span>
+        <span>${doc.sizeFormatted}</span>
+      </div>
+
+      <div class="single-card-actions">
+        <button class="btn-card-large btn-preview-large">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Preview PDF</span>
+        </button>
+
+        <button class="btn-card-large btn-download-large">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download</span>
+        </button>
+      </div>
+    `;
+
+    const previewBtn = card.querySelector('.btn-preview-large');
+    previewBtn.addEventListener('click', () => openPdfModal(doc));
+
+    const downloadBtn = card.querySelector('.btn-download-large');
+    downloadBtn.addEventListener('click', () => downloadSingleFile(doc.filePath, doc.fileName));
+
+    el.cardsGrid.appendChild(card);
+  });
+}
+
+// 8. In-App PDF Preview Modal
+function openPdfModal(doc) {
+  appState.activeModalDoc = doc;
+
+  el.modalTitle.textContent = `${doc.landName} (#${doc.surveyNo})`;
+  el.modalTypeBadge.textContent = doc.categoryLabel;
+  el.modalTypeBadge.className = `type-pill ${doc.category === 'NEW' ? 'pill-new' : 'pill-old'}`;
+
+  const encodedPath = encodeURI(doc.filePath);
+  el.pdfSpinner.classList.remove('hidden');
+  el.pdfFrame.src = encodedPath;
+  el.modalDirectOpenLink.href = encodedPath;
+
+  el.pdfModal.classList.add('active');
+  el.pdfModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
 }
 
 function closePdfModal() {
-  elements.pdfModal.classList.remove('active');
-  elements.pdfModal.setAttribute('aria-hidden', 'true');
-  elements.modalIframe.src = '';
+  el.pdfModal.classList.remove('active');
+  el.pdfModal.setAttribute('aria-hidden', 'true');
+  el.pdfFrame.src = '';
   document.body.style.overflow = '';
-  state.activeModalRecord = null;
+  appState.activeModalDoc = null;
 }
 
-// 11. Single PDF Download Trigger
-function triggerDownload(filePath, fileName) {
+// 9. Single File Download
+function downloadSingleFile(filePath, fileName) {
   const link = document.createElement('a');
   link.href = encodeURI(filePath);
   link.download = fileName;
@@ -535,83 +613,76 @@ function triggerDownload(filePath, fileName) {
   document.body.removeChild(link);
 }
 
-// 12. Client-Side Bulk ZIP Download with JSZip
-async function downloadRecordsAsZip(recordList, zipFileName) {
+// 10. Client-Side Bulk ZIP Download with JSZip
+async function triggerZipDownload(docList, zipFileName) {
   if (!window.JSZip) {
-    alert('ZIP compression library is still loading. Please check your connection.');
+    alert('ZIP compression library is still loading. Please check your internet connection.');
     return;
   }
 
-  // Open Progress Modal
-  elements.zipProgressTitle.textContent = 'Preparing ZIP Archive';
-  elements.zipProgressText.textContent = `Gathering 0 of ${recordList.length} documents...`;
-  elements.zipProgressBar.style.width = '0%';
-  elements.zipProgressModal.classList.add('active');
+  el.zipTitle.textContent = 'Preparing ZIP Archive';
+  el.zipStatusText.textContent = `Gathering 0 of ${docList.length} documents...`;
+  el.zipProgressBar.style.width = '0%';
+  el.zipModal.classList.add('active');
 
   const zip = new window.JSZip();
   let completed = 0;
 
   try {
-    const fetchPromises = recordList.map(async (record) => {
+    const fetchPromises = docList.map(async (doc) => {
       try {
-        const response = await fetch(encodeURI(record.filePath));
-        if (!response.ok) {
-          throw new Error(`Failed to load ${record.filePath} (${response.status})`);
-        }
-        const blob = await response.blob();
+        const res = await fetch(encodeURI(doc.filePath));
+        if (!res.ok) throw new Error(`Could not fetch ${doc.filePath}`);
+        const blob = await res.blob();
         
-        // Put files in clean subfolders inside the zip
-        const folderName = record.category === 'NEW' ? 'NEW_RECORDS' : 'OLD_RECORDS';
-        zip.folder(folderName).file(record.fileName, blob);
+        const folderName = doc.category === 'NEW' ? 'NEW_RECORDS' : 'OLD_RECORDS';
+        zip.folder(folderName).file(doc.fileName, blob);
 
         completed++;
-        const percent = Math.round((completed / recordList.length) * 80); // first 80% is fetching
-        elements.zipProgressText.textContent = `Gathering ${completed} of ${recordList.length} documents...`;
-        elements.zipProgressBar.style.width = `${percent}%`;
+        const percent = Math.round((completed / docList.length) * 80);
+        el.zipStatusText.textContent = `Gathering ${completed} of ${docList.length} documents...`;
+        el.zipProgressBar.style.width = `${percent}%`;
       } catch (err) {
-        console.error(`Error packing ${record.fileName}:`, err);
+        console.error('Error fetching file for ZIP:', err);
       }
     });
 
     await Promise.all(fetchPromises);
 
-    // Compress & build zip
-    elements.zipProgressTitle.textContent = 'Compressing Files';
-    elements.zipProgressText.textContent = 'Generating .zip package...';
-    elements.zipProgressBar.style.width = '90%';
+    el.zipTitle.textContent = 'Compressing Files';
+    el.zipStatusText.textContent = 'Creating .zip package...';
+    el.zipProgressBar.style.width = '90%';
 
-    const content = await zip.generateAsync(
+    const zipContent = await zip.generateAsync(
       { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
-      (metadata) => {
-        const finalPercent = 80 + Math.round(metadata.percent * 0.2);
-        elements.zipProgressBar.style.width = `${finalPercent}%`;
+      (meta) => {
+        const p = 80 + Math.round(meta.percent * 0.2);
+        el.zipProgressBar.style.width = `${p}%`;
       }
     );
 
-    elements.zipProgressBar.style.width = '100%';
-    elements.zipProgressText.textContent = 'Download starting!';
+    el.zipProgressBar.style.width = '100%';
+    el.zipStatusText.textContent = 'Download starting!';
 
-    // Trigger download
-    const url = URL.createObjectURL(content);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = zipFileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const url = URL.createObjectURL(zipContent);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = zipFileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-    // Clean up
     setTimeout(() => {
       URL.revokeObjectURL(url);
-      elements.zipProgressModal.classList.remove('active');
-    }, 1000);
+      el.zipModal.classList.remove('active');
+    }, 1200);
 
   } catch (error) {
-    console.error('ZIP generation failed:', error);
-    alert('Could not generate ZIP: ' + error.message);
-    elements.zipProgressModal.classList.remove('active');
+    console.error('ZIP failed:', error);
+    alert('Failed to generate ZIP archive: ' + error.message);
+    el.zipModal.classList.remove('active');
   }
 }
 
-// Run on page load
-document.addEventListener('DOMContentLoaded', initApp);
+// Start application
+document.addEventListener('DOMContentLoaded', initialize);

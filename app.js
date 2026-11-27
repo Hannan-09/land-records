@@ -2,13 +2,25 @@
  * Land Survey Records Portal - Application Logic
  */
 
+// Mapping of Survey Numbers to Local Land Names
+const SURVEY_NAMES = {
+  '635': 'META WALU KAKA NU',
+  '636': 'META WALU AAPDU',
+  '909': '5 MANYU AAPDU',
+  '910': 'SAMANYU KAKA WALU',
+  '911': 'RASUL PIRA WALU',
+  '912': 'KUWA WALI KAAPLI',
+  '914': '5 MANYU BAAJU NI KAAPLI'
+};
+
 // 1. Certified Land Records Catalog
 const LAND_RECORDS = [
   // --- NEW RECORDS ---
   {
     id: 'new-635',
     surveyNo: '635',
-    title: 'Survey No. 635',
+    landName: 'META WALU KAKA NU',
+    title: '635 - META WALU KAKA NU',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '635.pdf',
@@ -18,7 +30,8 @@ const LAND_RECORDS = [
   {
     id: 'new-636',
     surveyNo: '636',
-    title: 'Survey No. 636',
+    landName: 'META WALU AAPDU',
+    title: '636 - META WALU AAPDU',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '636.pdf',
@@ -28,7 +41,8 @@ const LAND_RECORDS = [
   {
     id: 'new-909',
     surveyNo: '909',
-    title: 'Survey No. 909',
+    landName: '5 MANYU AAPDU',
+    title: '909 - 5 MANYU AAPDU',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '909.pdf',
@@ -38,7 +52,8 @@ const LAND_RECORDS = [
   {
     id: 'new-910',
     surveyNo: '910',
-    title: 'Survey No. 910',
+    landName: 'SAMANYU KAKA WALU',
+    title: '910 - SAMANYU KAKA WALU',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '910.pdf',
@@ -48,7 +63,8 @@ const LAND_RECORDS = [
   {
     id: 'new-911',
     surveyNo: '911',
-    title: 'Survey No. 911',
+    landName: 'RASUL PIRA WALU',
+    title: '911 - RASUL PIRA WALU',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '911.pdf',
@@ -58,7 +74,8 @@ const LAND_RECORDS = [
   {
     id: 'new-912',
     surveyNo: '912',
-    title: 'Survey No. 912',
+    landName: 'KUWA WALI KAAPLI',
+    title: '912 - KUWA WALI KAAPLI',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '912.pdf',
@@ -68,7 +85,8 @@ const LAND_RECORDS = [
   {
     id: 'new-914',
     surveyNo: '914',
-    title: 'Survey No. 914',
+    landName: '5 MANYU BAAJU NI KAAPLI',
+    title: '914 - 5 MANYU BAAJU NI KAAPLI',
     category: 'NEW',
     categoryLabel: 'NEW RECORD',
     fileName: '914.pdf',
@@ -80,7 +98,8 @@ const LAND_RECORDS = [
   {
     id: 'old-635',
     surveyNo: '635',
-    title: 'Survey No. 635 (Old)',
+    landName: 'META WALU KAKA NU',
+    title: '635 - META WALU KAKA NU (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '635 OLD RECORD.pdf',
@@ -90,7 +109,8 @@ const LAND_RECORDS = [
   {
     id: 'old-636',
     surveyNo: '636',
-    title: 'Survey No. 636 (Old)',
+    landName: 'META WALU AAPDU',
+    title: '636 - META WALU AAPDU (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '636 OLD RECORD.pdf',
@@ -100,7 +120,8 @@ const LAND_RECORDS = [
   {
     id: 'old-909',
     surveyNo: '909',
-    title: 'Survey No. 909 (Old)',
+    landName: '5 MANYU AAPDU',
+    title: '909 - 5 MANYU AAPDU (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '909 OLD RECORD.pdf',
@@ -110,7 +131,8 @@ const LAND_RECORDS = [
   {
     id: 'old-910',
     surveyNo: '910',
-    title: 'Survey No. 910 (Old)',
+    landName: 'SAMANYU KAKA WALU',
+    title: '910 - SAMANYU KAKA WALU (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '910 OLD RECORD.pdf',
@@ -120,7 +142,8 @@ const LAND_RECORDS = [
   {
     id: 'old-911',
     surveyNo: '911',
-    title: 'Survey No. 911 (Old)',
+    landName: 'RASUL PIRA WALU',
+    title: '911 - RASUL PIRA WALU (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '911 OLD RECORD.pdf',
@@ -130,7 +153,8 @@ const LAND_RECORDS = [
   {
     id: 'old-912',
     surveyNo: '912',
-    title: 'Survey No. 912 (Old)',
+    landName: 'KUWA WALI KAAPLI',
+    title: '912 - KUWA WALI KAAPLI (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '912 OLD RECORD.pdf',
@@ -140,7 +164,8 @@ const LAND_RECORDS = [
   {
     id: 'old-914',
     surveyNo: '914',
-    title: 'Survey No. 914 (Old)',
+    landName: '5 MANYU BAAJU NI KAAPLI',
+    title: '914 - 5 MANYU BAAJU NI KAAPLI (Old)',
     category: 'OLD',
     categoryLabel: 'OLD RECORD',
     fileName: '914 OLD RECORD.pdf',
@@ -211,7 +236,7 @@ function initApp() {
 
 // 5. Event Binding
 function bindEvents() {
-  // Search input events
+  // Search input events (supports survey number or land name)
   elements.searchInput.addEventListener('input', (e) => {
     state.searchQuery = e.target.value.trim().toLowerCase();
     elements.clearSearchBtn.style.display = state.searchQuery ? 'flex' : 'none';
@@ -254,7 +279,7 @@ function bindEvents() {
     switchView('records', 'ALL');
   });
 
-  // Survey Pills
+  // Survey Pills (Search by specific survey number or name)
   elements.pills.forEach(pill => {
     pill.addEventListener('click', () => {
       const survey = pill.getAttribute('data-survey');
@@ -342,7 +367,7 @@ function switchView(viewName, filterName) {
   render();
 }
 
-// 7. Filter & Search Logic
+// 7. Filter & Search Logic (searches by survey number, land name, title, or filename)
 function getFilteredRecords() {
   return LAND_RECORDS.filter(record => {
     // Category match
@@ -351,8 +376,9 @@ function getFilteredRecords() {
 
     // Search query match
     if (!state.searchQuery) return true;
-    const query = state.searchQuery;
-    return record.surveyNo.includes(query) || 
+    const query = state.searchQuery.toLowerCase();
+    return record.surveyNo.toLowerCase().includes(query) || 
+           record.landName.toLowerCase().includes(query) ||
            record.title.toLowerCase().includes(query) ||
            record.fileName.toLowerCase().includes(query);
   });
@@ -417,8 +443,9 @@ function createRecordCard(record) {
 
   card.innerHTML = `
     <div class="record-card-top">
-      <div class="survey-badge">
-        <span>Survey #${record.surveyNo}</span>
+      <div class="survey-badge" title="Survey #${record.surveyNo} - ${record.landName}">
+        <span class="badge-num">#${record.surveyNo}</span>
+        <span class="badge-land-name">${record.landName}</span>
       </div>
       <span class="record-type-badge ${typeTagClass}">${record.categoryLabel}</span>
     </div>
